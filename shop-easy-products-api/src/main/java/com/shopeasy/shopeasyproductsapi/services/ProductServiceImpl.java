@@ -1,29 +1,36 @@
 package com.shopeasy.shopeasyproductsapi.services;
 
 import com.shopeasy.shopeasyproductsapi.model.Product;
+import com.shopeasy.shopeasyproductsapi.repositories.ProductRepo;
+import net.datafaker.Faker;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
+    @Autowired
+    private ProductRepo productRepo;
 
     @Override
-    public List<Product> getProducts() {
-        List<Product> list = new ArrayList<>();
-
-        for (int i = 0; i < 10; i++) {
-            long id = Math.abs(UUID.randomUUID().getMostSignificantBits());
-            double price = Math.random();
-            String img = "https://picsum.photos/640/640?r=" + i;
-            Product p = new Product(id, "product-"+i, price, new Date().toString(), img);
-            list.add(p);
-        }
-
-        return list;
+    public List<Product> getProducts()  {
+        return productRepo.getProducts();
     }
+
+    @Override
+    public List<Product> getProductsByFilter(long categoryId) {
+        return productRepo.getProductsByCategory(categoryId);
+    }
+
+    @Override
+    public Optional<Product> getProductById(long id) {
+        return productRepo.getProduct(id);
+    }
+
+
 }

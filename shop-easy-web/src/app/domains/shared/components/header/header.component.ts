@@ -1,11 +1,14 @@
-import { Component, Input, SimpleChanges, inject, signal } from '@angular/core';
-import { IProduct } from '../../models/product.model';
-import { CartService } from '../../services/cart.service';
+import { Component, inject, signal } from '@angular/core';
+import { RouterLinkActive, RouterLinkWithHref } from '@angular/router';
+import { CartService } from '@shared/services/cart.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [],
+  imports: [
+    RouterLinkWithHref,
+    RouterLinkActive,
+  ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
@@ -20,7 +23,4 @@ export class HeaderComponent {
   toogleSideMenu () {
     this.hideSideMenu.update((prev) => !prev);
   }
-
-
-
 }

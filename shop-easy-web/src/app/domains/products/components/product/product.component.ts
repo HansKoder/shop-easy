@@ -1,15 +1,23 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { IProduct } from '../../../shared/models/product.model';
+import { RouterLinkWithHref } from '@angular/router';
+import { IProduct } from '@shared/models/product.model';
+import { TimeAgoPipe } from '@shared/pipes/time-ago.pipe';
 
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [],
+  imports: [
+    CommonModule,
+    TimeAgoPipe,
+    RouterLinkWithHref
+  ],
   templateUrl: './product.component.html',
   styleUrl: './product.component.css'
 })
 export class ProductComponent {  
   @Input({required: true}) product!: IProduct;
+  today = Date.now();
 
   @Output() addToCart = new EventEmitter();
 

@@ -1,42 +1,62 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
-import { ProductComponent } from '../../components/product/product.component';
-import { IProduct } from '../../../shared/models/product.model';
-import { HeaderComponent } from '../../../shared/components/header/header.component';
-import { CartService } from '../../../shared/services/cart.service';
+import { Component, inject, signal, Input, SimpleChanges } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { ProductComponent } from '@products/components/product/product.component';
+import { ICategory, IProduct } from '@shared/models/product.model';
+import { CartService } from "@shared/services/cart.service";
+import { CategoryService } from '@shared/services/category.service';
+import { ProductService } from '@shared/services/product.service';
 
 @Component({
   selector: 'app-list',
   standalone: true,
-  imports: [CommonModule, ProductComponent, HeaderComponent],
+  imports: [CommonModule, ProductComponent, RouterModule],
   templateUrl: './list.component.html',
   styleUrl: './list.component.css'
 })
 export class ListComponent {
   private cartService = inject(CartService);
+  private productService = inject(ProductService);
+  private categoryService = inject(CategoryService);
+
+  @Input() categoryId! : string;
 
   products = signal<IProduct[]>([]);
+  categories = signal<ICategory[]>([]);
   cart = this.cartService.cart;
 
   ngOnInit(): void {
-    this.loadProducts();
+    this.getCategories();
   }
 
-  loadProducts () {
-    const items : IProduct[] = [];
-    for (let index = 0; index < 8; index++) {
-      const product : IProduct = {
-        id: index,
-        img: `https://picsum.photos/640/640?r=${index}`,
-        title: `product-${index}`,
-        price: index + 1,
-        createdAt: new Date().toISOString()
+  ngOnChanges(changes: SimpleChanges): void {
+    this.getProducts();
+  }
+
+  getProducts () {
+    this.productService
+    .getProducts(this.categoryId)
+    .subscribe({
+      next: (result) => {
+        this.products.set(result);
+      },
+      error: (err) => {
+        console.log(`error cannot fetch products ${err}`);
       }
+    });
+  }
 
-      items.push(product);
-    }
-
-    this.products.set(items);
+  getCategories () {
+    this.categoryService
+    .getCategories()
+    .subscribe({
+      next: (result) => {
+        this.categories.set(result)
+      },
+      error: (err) => {
+        console.log(`error cannot fetch categories ${err}`);
+      }
+    });
   }
 
   addToCart (product: IProduct) {
